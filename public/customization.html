@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stage Timer - Customization</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: white;
+            overflow: hidden;
+        }
+
+        .app-container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: #ff5f56;
+            border: none;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 10px;
+        }
+
+        .tabs {
+            display: flex;
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .tab.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .tab:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .content {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+
+        .color-picker-group {
+            display: grid;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .color-picker-item {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 16px;
+            border-radius: 8px;
+        }
+
+        .color-label {
+            flex: 1;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .color-input-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .color-input {
+            width: 48px;
+            height: 32px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .color-value {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            font-family: monospace;
+        }
+
+        .timers-section {
+            margin-bottom: 24px;
+        }
+
+        .timers-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .add-timer-btn {
+            background: #007AFF;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            color: white;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: background 0.2s ease;
+        }
+
+        .add-timer-btn:hover {
+            background: #0056d3;
+        }
+
+        .timer-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .timer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .timer-index {
+            font-weight: 600;
+            color: #007AFF;
+        }
+
+        .remove-timer-btn {
+            background: #ff3b30;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            color: white;
+            cursor: pointer;
+            font-size: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 12px;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .text-input, .number-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            padding: 8px 12px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .number-input {
+            width: 120px;
+        }
+
+        .text-input:focus, .number-input:focus {
+            outline: none;
+            border-color: #007AFF;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .sound-options {
+            display: grid;
+            gap: 12px;
+        }
+
+        .sound-option {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px 16px;
+            border-radius: 8px;
+        }
+
+        .sound-label {
+            flex: 1;
+            font-size: 14px;
+        }
+
+        .checkbox {
+            width: 18px;
+            height: 18px;
+            accent-color: #007AFF;
+        }
+
+        .footer {
+            padding: 20px 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn-cancel {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .btn-cancel:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .btn-save {
+            background: #007AFF;
+            color: white;
+        }
+
+        .btn-save:hover {
+            background: #0056d3;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <h1>Customize Stage Timer</h1>
+            <button class="close-btn" onclick="closeWindow()">×</button>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('colors')">Colors</button>
+            <button class="tab" onclick="switchTab('timers')">Timers</button>
+            <button class="tab" onclick="switchTab('sounds')">Sounds</button>
+        </div>
+
+        <div class="content">
+            <div id="loading" class="loading">
+                Loading settings...
+            </div>
+
+            <div id="colors" class="tab-content">
+                <div class="section-title">Timer Colors</div>
+                <div class="color-picker-group">
+                    <div class="color-picker-item">
+                        <span class="color-label">Running (Normal)</span>
+                        <div class="color-input-group">
+                            <input type="color" class="color-input" id="color-running" onchange="updateColor('running', this.value)">
+                            <span class="color-value" id="color-running-value">#005500</span>
+                        </div>
+                    </div>
+                    <div class="color-picker-item">
+                        <span class="color-label">Warning (< 1 min)</span>
+                        <div class="color-input-group">
+                            <input type="color" class="color-input" id="color-warning" onchange="updateColor('warning', this.value)">
+                            <span class="color-value" id="color-warning-value">#550000</span>
+                        </div>
+                    </div>
+                    <div class="color-picker-item">
+                        <span class="color-label">Overtime</span>
+                        <div class="color-input-group">
+                            <input type="color" class="color-input" id="color-overtime" onchange="updateColor('overtime', this.value)">
+                            <span class="color-value" id="color-overtime-value">#000055</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="timers" class="tab-content">
+                <div class="timers-section">
+                    <div class="timers-header">
+                        <div class="section-title">Timer List</div>
+                        <button class="add-timer-btn" onclick="addTimer()">+ Add Timer</button>
+                    </div>
+                    <div id="timers-list"></div>
+                </div>
+            </div>
+
+            <div id="sounds" class="tab-content">
+                <div class="section-title">Sound Notifications</div>
+                <div class="sound-options">
+                    <div class="sound-option">
+                        <span class="sound-label">Timer Start</span>
+                        <input type="checkbox" class="checkbox" id="sound-timerStart" onchange="updateSound('timerStart', this.checked)">
+                    </div>
+                    <div class="sound-option">
+                        <span class="sound-label">Timer End</span>
+                        <input type="checkbox" class="checkbox" id="sound-timerEnd" onchange="updateSound('timerEnd', this.checked)">
+                    </div>
+                    <div class="sound-option">
+                        <span class="sound-label">Warning (1 minute left)</span>
+                        <input type="checkbox" class="checkbox" id="sound-warning" onchange="updateSound('warning', this.checked)">
+                    </div>
+                    <div class="sound-option">
+                        <span class="sound-label">Overtime</span>
+                        <input type="checkbox" class="checkbox" id="sound-overtime" onchange="updateSound('overtime', this.checked)">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <button class="btn btn-cancel" onclick="closeWindow()">Cancel</button>
+            <button class="btn btn-save" onclick="saveSettings()">Save Changes</button>
+        </div>
+    </div>
+
+    <script src="customization.js"></script>
+</body>
+</html>
