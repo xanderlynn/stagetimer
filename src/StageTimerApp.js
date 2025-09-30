@@ -194,10 +194,39 @@ const StageTimerApp = () => {
     });
   };
 
+  const archiveTimer = (index) => {
+    setTimers(currentTimers => {
+      const updatedTimers = [...currentTimers];
+      const timerToArchive = updatedTimers[index];
+      
+      // Archive the timer and stop it
+      timerToArchive.archive();
+      
+      // Sort timers: active timers first, archived timers at the bottom
+      updatedTimers.sort((a, b) => {
+        if (a.isArchived !== b.isArchived) {
+          return a.isArchived ? 1 : -1;
+        }
+        return 0; // Keep original order within each group
+      });
+      
+      return updatedTimers;
+    });
+  };
+
   const updateTimers = (newTimers) => {
     const timerModels = newTimers.map(timer => 
-      new TimerModel(timer.title, timer.initialTime, timer.timeRemaining, timer.isRunning)
+      new TimerModel(timer.title, timer.initialTime, timer.timeRemaining, timer.isRunning, timer.isArchived)
     );
+    
+    // Sort timers: active timers first, archived timers at the bottom
+    timerModels.sort((a, b) => {
+      if (a.isArchived !== b.isArchived) {
+        return a.isArchived ? 1 : -1;
+      }
+      return 0;
+    });
+    
     setTimers(timerModels);
     
     // Update previous states
@@ -226,9 +255,10 @@ const StageTimerApp = () => {
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         {timers.map((timer, index) => (
           <TimerTile
-            key={`${index}-${timer.timeRemaining}-${timer.isRunning}`}
+            key={`${index}-${timer.timeRemaining}-${timer.isRunning}-${timer.isArchived}`}
             timer={timer}
             onToggle={() => toggleTimer(index)}
+            onArchive={() => archiveTimer(index)}
             customColors={settings.colors}
           />
         ))}
@@ -240,14 +270,16 @@ const StageTimerApp = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',  // Semi-transparent background
     WebkitAppRegion: 'drag',  // Make entire window draggable
   },
   scrollView: {
     flex: 1,
+    WebkitAppRegion: 'drag',  // Ensure scroll view is draggable
   },
   scrollContent: {
     padding: 4,
+    WebkitAppRegion: 'drag',  // Ensure content is draggable
   },
   loadingContainer: {
     flex: 1,

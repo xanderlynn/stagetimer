@@ -1,19 +1,23 @@
 export class TimerModel {
-  constructor(title, initialTime, timeRemaining = null, isRunning = false) {
+  constructor(title, initialTime, timeRemaining = null, isRunning = false, isArchived = false) {
     this.title = title;
     this.initialTime = initialTime;
     this.timeRemaining = timeRemaining !== null ? timeRemaining : initialTime;
     this.isRunning = isRunning;
+    this.isArchived = isArchived;
   }
 
   static fromJson(json) {
-    return new TimerModel(json.title, json.time);
+    return new TimerModel(json.title, json.time, json.timeRemaining, json.isRunning, json.isArchived);
   }
 
   toJson() {
     return {
       title: this.title,
-      time: this.initialTime
+      time: this.initialTime,
+      timeRemaining: this.timeRemaining,
+      isRunning: this.isRunning,
+      isArchived: this.isArchived
     };
   }
 
@@ -51,6 +55,15 @@ export class TimerModel {
     if (this.isRunning) {
       this.timeRemaining--;
     }
+  }
+
+  archive() {
+    this.isArchived = true;
+    this.isRunning = false;
+  }
+
+  unarchive() {
+    this.isArchived = false;
   }
 
   getBackgroundColor() {

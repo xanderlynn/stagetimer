@@ -21,16 +21,19 @@ function createWindow() {
         ? path.join(__dirname, 'preload.js')
         : path.join(__dirname, '../build/preload.js')
     },
-    frame: false,          // Frameless like Python version
+    frame: false,          // Frameless for transparency
     alwaysOnTop: true,
     transparent: true,
-    opacity: 0.9,
+    opacity: 1.0,          // Full opacity, transparency handled by CSS
     skipTaskbar: false,
     resizable: true,
     movable: true,
-    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    backgroundColor: 'rgba(0, 0, 0, 0)', // Fully transparent background
     titleBarStyle: 'hidden'
   });
+
+  // Don't enable click-through by default - let dragging work
+  // Click-through will be controlled dynamically by the renderer process
 
   // Load the app
   mainWindow.loadURL(
@@ -151,8 +154,8 @@ function registerGlobalShortcuts() {
     }
   });
 
-  // Settings dialog with Cmd+, (Mac) or Ctrl+, (Windows/Linux)
-  globalShortcut.register('CommandOrControl+comma', () => {
+  // Settings dialog with Cmd+Shift+S (Mac) or Ctrl+Shift+S (Windows/Linux)
+  globalShortcut.register('CommandOrControl+Shift+S', () => {
     createCustomizationWindow();
   });
 }

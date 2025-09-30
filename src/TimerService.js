@@ -3,7 +3,14 @@ import { TimerModel } from './TimerModel';
 export class TimerService {
   static async loadTimers() {
     try {
-      // In a desktop app, we'll load from the timers.json file
+      // Check if we have saved timers in localStorage first
+      const savedTimers = localStorage.getItem('stage-timer-data');
+      if (savedTimers) {
+        const jsonData = JSON.parse(savedTimers);
+        return jsonData.map(timer => TimerModel.fromJson(timer));
+      }
+
+      // Try to load from timers.json file (fallback)
       const response = await fetch('./timers.json');
       if (!response.ok) {
         throw new Error('Failed to load timers.json');
@@ -11,12 +18,13 @@ export class TimerService {
       const jsonData = await response.json();
       return jsonData.map(timer => TimerModel.fromJson(timer));
     } catch (error) {
-      console.warn('Failed to load timers.json, using defaults:', error);
+      console.warn('Failed to load timers, using defaults:', error);
       // Fallback to default timers if file loading fails
       return [
-        new TimerModel('Dataverse Review', 30),
-        new TimerModel('Power Apps Review', 900),
-        new TimerModel('Power Automate Review', 900),
+        new TimerModel('Presentation', 1800),
+        new TimerModel('Q&A', 300),
+        new TimerModel('Break', 900),
+        new TimerModel('Setup', 600),
       ];
     }
   }
