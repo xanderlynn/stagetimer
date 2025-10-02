@@ -2,6 +2,56 @@
 
 Get up and running with Stage Timer in under 5 minutes!
 
+## Application Architecture & Data Flow
+
+```mermaid
+flowchart TD
+    A[User Interaction] --> B{Action Type}
+    
+    B -->|Click Timer Button| C[StageTimerApp.toggleTimer]
+    B -->|Right-Click Timer| D[StageTimerApp.archiveTimer]
+    B -->|Open Settings| E[Electron IPC]
+    B -->|Drag Window| F[Electron WebkitAppRegion]
+    
+    C --> G[TimerModel.start/pause]
+    D --> H[TimerModel.archive]
+    
+    G --> I[Update Timer State]
+    H --> I
+    
+    I --> J[Sort Timers Array]
+    J --> K[Re-render TimerTile Components]
+    
+    K --> L[Update Progress Bars]
+    K --> M[Update Button Colors]
+    K --> N[Update Text Display]
+    
+    O[Timer Interval] --> P[TimerModel.tick]
+    P --> Q{Timer Events}
+    
+    Q -->|Timer Start| R[SoundManager.playTimerStart]
+    Q -->|60s Warning| S[SoundManager.playWarning]
+    Q -->|Timer End| T[SoundManager.playTimerEnd]
+    Q -->|Overtime| U[SoundManager.playOvertime]
+    
+    R --> V[Web Audio API]
+    S --> V
+    T --> V
+    U --> V
+    
+    W[TimerService] --> X[localStorage]
+    W --> Y[timers.json fallback]
+    
+    Z[Settings] --> AA[Customization Window]
+    AA --> BB[IPC Communication]
+    BB --> CC[Update Main Window]
+    
+    style A fill:#e1f5fe
+    style V fill:#fff3e0
+    style X fill:#f3e5f5
+    style CC fill:#e8f5e8
+```
+
 ## Prerequisites
 
 1. **Check if Node.js is installed**:
@@ -105,6 +155,33 @@ npm run build
 npm run electron-pack
 ```
 The built app will be in the `dist/` folder.
+
+## Component Structure
+
+```mermaid
+graph LR
+    A[Electron Main Process] --> B[Renderer Process]
+    B --> C[StageTimerApp]
+    C --> D[TimerTile Components]
+    C --> E[TimerService]
+    C --> F[SoundManager]
+    
+    D --> G[Individual Timer Display]
+    D --> H[Progress Bars]
+    D --> I[Control Buttons]
+    
+    E --> J[localStorage]
+    E --> K[timers.json]
+    
+    F --> L[Web Audio API]
+    
+    M[Customization Window] --> N[IPC Bridge] --> A
+    
+    style A fill:#ffcdd2
+    style B fill:#c8e6c9
+    style C fill:#fff9c4
+    style M fill:#e1bee7
+```
 
 ## Tips & Features
 
